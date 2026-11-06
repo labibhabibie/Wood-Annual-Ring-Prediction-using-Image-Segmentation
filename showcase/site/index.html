@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annual rings: reading a tree's age by image segmentation</title>
+<meta name="description" content="A computer-vision study in Python and OpenCV: photographs of wood cross-sections clustered with K-Means and traced with edge filters, as groundwork for counting annual rings by machine.">
+<meta name="theme-color" content="#e4e5e0">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="fonts/stix-two-text.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=202611060954">
+<script>document.documentElement.classList.replace('no-js', 'js');</script>
+</head>
+<body id="top">
+
+<div class="split">
+  <main class="read">
+
+    <header class="card" data-stage="0">
+      <svg class="band" role="img" aria-label="One radius of the slice, pith to bark: dark latewood bands as ink, light wood as paper" viewBox="0 0 1600 1" preserveAspectRatio="none"><rect x="60" width="15" height="1"/><rect x="76" width="1" height="1"/><rect x="88" width="17" height="1"/><rect x="117" width="9" height="1"/><rect x="139" width="4" height="1"/><rect x="154" width="12" height="1"/><rect x="187" width="14" height="1"/><rect x="211" width="16" height="1"/><rect x="235" width="6" height="1"/><rect x="246" width="4" height="1"/><rect x="257" width="2" height="1"/><rect x="272" width="1" height="1"/><rect x="276" width="2" height="1"/><rect x="284" width="15" height="1"/><rect x="314" width="5" height="1"/><rect x="325" width="9" height="1"/><rect x="358" width="12" height="1"/><rect x="390" width="2" height="1"/><rect x="398" width="6" height="1"/><rect x="416" width="15" height="1"/><rect x="447" width="4" height="1"/><rect x="456" width="8" height="1"/><rect x="465" width="4" height="1"/><rect x="471" width="1" height="1"/><rect x="473" width="4" height="1"/><rect x="482" width="1" height="1"/><rect x="495" width="4" height="1"/><rect x="502" width="7" height="1"/><rect x="521" width="6" height="1"/><rect x="532" width="4" height="1"/><rect x="549" width="3" height="1"/><rect x="556" width="2" height="1"/><rect x="565" width="4" height="1"/><rect x="571" width="9" height="1"/><rect x="601" width="12" height="1"/><rect x="616" width="6" height="1"/><rect x="628" width="7" height="1"/><rect x="643" width="6" height="1"/><rect x="660" width="7" height="1"/><rect x="676" width="5" height="1"/><rect x="699" width="3" height="1"/><rect x="706" width="7" height="1"/><rect x="719" width="4" height="1"/><rect x="739" width="2" height="1"/><rect x="750" width="4" height="1"/><rect x="760" width="3" height="1"/><rect x="768" width="4" height="1"/><rect x="774" width="7" height="1"/><rect x="785" width="4" height="1"/><rect x="795" width="3" height="1"/><rect x="804" width="1" height="1"/><rect x="821" width="8" height="1"/><rect x="836" width="7" height="1"/><rect x="851" width="9" height="1"/><rect x="864" width="6" height="1"/><rect x="897" width="5" height="1"/><rect x="910" width="4" height="1"/><rect x="919" width="4" height="1"/><rect x="927" width="7" height="1"/><rect x="941" width="5" height="1"/><rect x="954" width="4" height="1"/><rect x="963" width="12" height="1"/><rect x="979" width="5" height="1"/><rect x="993" width="4" height="1"/><rect x="1001" width="8" height="1"/><rect x="1015" width="7" height="1"/><rect x="1044" width="3" height="1"/><rect x="1055" width="4" height="1"/><rect x="1066" width="6" height="1"/><rect x="1078" width="10" height="1"/><rect x="1115" width="5" height="1"/><rect x="1129" width="6" height="1"/><rect x="1138" width="3" height="1"/><rect x="1148" width="5" height="1"/><rect x="1172" width="14" height="1"/><rect x="1203" width="2" height="1"/><rect x="1211" width="5" height="1"/><rect x="1225" width="8" height="1"/><rect x="1242" width="6" height="1"/><rect x="1258" width="16" height="1"/><rect x="1282" width="5" height="1"/><rect x="1308" width="1" height="1"/><rect x="1310" width="6" height="1"/><rect x="1324" width="6" height="1"/><rect x="1339" width="4" height="1"/><rect x="1350" width="9" height="1"/><rect x="1375" width="10" height="1"/><rect x="1403" width="3" height="1"/><rect x="1416" width="30" height="1"/><rect x="1476" width="4" height="1"/><rect x="1506" width="4" height="1"/><rect x="1525" width="4" height="1"/><rect x="1531" width="2" height="1"/></svg>
+      <p class="card__mark">Annual rings</p>
+      <h1 class="card__title" data-load style="--d:80ms">Reading a tree's age from its rings</h1>
+      <p class="card__lead" data-load style="--d:200ms">A computer-vision study in Python and OpenCV. Photographs of wood cross-sections are clustered with K-Means and traced with edge filters, the groundwork for counting annual rings by machine.</p>
+      <p data-load style="--d:300ms"><a class="button" href="#try">Try the segmentation</a></p>
+      <nav class="card__nav" aria-label="Sections">
+        <a href="#method">Method</a>
+        <a href="#filters">Edge filters</a>
+        <a href="#reading">Reading list</a>
+        <a href="https://github.com/labibhabibie/Wood-Annual-Ring-Prediction-using-Image-Segmentation" rel="noopener">Source code</a>
+      </nav>
+    </header>
+
+    <!-- The stage on a phone sits here, between the card and the text -->
+
+    <section class="intro" data-stage="1" aria-labelledby="intro-title">
+      <h2 id="intro-title" class="h2" data-reveal>One ring, one year</h2>
+      <p class="intro__first" data-reveal>A tree adds one ring of wood every growing season: pale, fast earlywood in spring, dense, dark latewood towards autumn. Count the dark bands from the pith to the bark and you have the tree's age.</p>
+      <p data-reveal>Counting by hand is slow, and easy to get wrong where rings crowd together near the bark or where a crack runs through them.</p>
+      <p data-reveal>This project, built over two weeks in September 2023, asks how far classical image processing gets on its own: no training data, only the photograph and a handful of OpenCV calls.</p>
+      <p data-reveal>The slice beside this text is a poplar that hangs in the Botanical Museum in Helsinki. Every processed image of it on this page is the output of the repository's own code, run with the notebooks' parameters.</p>
+    </section>
+
+    <section class="method" id="method" data-stage="2" aria-labelledby="method-title">
+      <div class="method__head">
+        <h2 id="method-title" class="h2" data-reveal>From photograph to segments</h2>
+        <p data-reveal>Two notebooks do the work. One sorts every pixel into a few colour groups, the other looks for sharp changes in brightness. Both start from the same photograph.</p>
+      </div>
+      <div class="slip" data-reveal>
+        <h3 class="slip__group">Prepare</h3>
+        <p class="slip__row"><span>Read the photograph</span><i></i><span>cv2.imread</span></p>
+        <p class="slip__row"><span>Reorder colour channels</span><i></i><span>BGR to RGB</span></p>
+        <p class="slip__row"><span>Convert to grayscale</span><i></i><span>one channel</span></p>
+        <h3 class="slip__group">Cluster</h3>
+        <p class="slip__row"><span>Flatten to a list of pixels</span><i></i><span>N × 3, float32</span></p>
+        <p class="slip__row"><span>K-Means on colour</span><i></i><span>k = 6</span></p>
+        <p class="slip__row"><span>Stop after</span><i></i><span>100 rounds or ε 0.85</span></p>
+        <p class="slip__row"><span>Restarts</span><i></i><span>10, random centres</span></p>
+        <h3 class="slip__group">Trace</h3>
+        <p class="slip__row"><span>Sobel, x and y</span><i></i><span>kernel 5</span></p>
+        <p class="slip__row"><span>Scharr, x</span><i></i><span>3 × 3</span></p>
+        <p class="slip__row"><span>Laplacian</span><i></i><span>kernel 3</span></p>
+        <p class="slip__row"><span>Canny thresholds</span><i></i><span>100–200, 160–190</span></p>
+        <p class="slip__total"><span>6 clusters, 6 edge maps</span><span>per photo</span></p>
+      </div>
+    </section>
+
+    <section class="try" id="try" data-stage="3" aria-labelledby="try-title">
+      <h2 id="try-title" class="h2" data-reveal>Set k, see the slice</h2>
+      <p data-reveal>K-Means needs to be told how many groups to find. Pick a number and drag across the slice to compare the photograph with what the algorithm keeps.</p>
+
+      <figure class="compare" data-reveal>
+        <div class="compare__frame" style="--wipe:50%">
+          <img class="compare__base" src="img/kmeans-0.webp" width="900" height="900" alt="The poplar slice photographed on a museum wall, with numbered pins on its rings" loading="lazy" decoding="async">
+          <div class="compare__over" aria-hidden="true">
+            <img class="seg" data-k="2" src="img/kmeans-2.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+            <img class="seg" data-k="3" src="img/kmeans-3.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+            <img class="seg" data-k="4" src="img/kmeans-4.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+            <img class="seg" data-k="5" src="img/kmeans-5.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+            <img class="seg" data-k="6" src="img/kmeans-6.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+            <img class="seg" data-k="7" src="img/kmeans-7.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+            <img class="seg" data-k="8" src="img/kmeans-8.webp" width="900" height="900" alt="" loading="lazy" decoding="async">
+          </div>
+          <span class="compare__handle" aria-hidden="true"></span>
+          <input class="compare__wipe" type="range" min="0" max="100" value="50" aria-label="Share of the slice shown segmented">
+        </div>
+        <figcaption class="compare__cap">Left of the line: K-Means segmentation. Right: the photograph.</figcaption>
+      </figure>
+
+      <fieldset class="kpick" data-reveal>
+        <legend>Number of clusters</legend>
+        <div class="kpick__row">
+          <label><input type="radio" name="k" value="2" id="k2"><span>2</span></label>
+          <label><input type="radio" name="k" value="3" id="k3"><span>3</span></label>
+          <label><input type="radio" name="k" value="4" id="k4"><span>4</span></label>
+          <label><input type="radio" name="k" value="5" id="k5"><span>5</span></label>
+          <label><input type="radio" name="k" value="6" id="k6" checked><span>6</span></label>
+          <label><input type="radio" name="k" value="7" id="k7"><span>7</span></label>
+          <label><input type="radio" name="k" value="8" id="k8"><span>8</span></label>
+        </div>
+      </fieldset>
+
+      <div class="kread" data-reveal aria-live="polite">
+        <p class="kread__swatches" aria-hidden="true"></p>
+        <p class="kread__text"><strong class="kread__k">Six colours.</strong> The first script counted clusters and called the result the age, so it would call this poplar <strong class="kread__age">6 years old</strong>: the answer is always k. The rings have to be counted along a radius instead.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="stage" aria-label="The poplar slice at each step">
+    <figure class="stage__frame">
+      <img class="stage__img is-on" data-step="0" src="img/stage-original.webp" width="1400" height="1400" alt="A poplar trunk slice with dense annual rings, a crack from the pith to the bark and numbered museum pins">
+      <img class="stage__img" data-step="1" src="img/stage-gray.webp" width="1400" height="1400" alt="The same slice in grayscale" loading="lazy" decoding="async">
+      <img class="stage__img" data-step="2" src="img/stage-kmeans.webp" width="1400" height="1400" alt="The same slice reduced to six colour clusters by K-Means" loading="lazy" decoding="async">
+      <img class="stage__img" data-step="3" src="img/stage-sobel.webp" width="1400" height="1400" alt="The same slice through a Sobel filter, rings drawn as pale lines on black" loading="lazy" decoding="async">
+      <figcaption class="stage__cap"><span class="stage__step">Photograph</span> · Populus slice, Botanical Museum, Helsinki</figcaption>
+    </figure>
+  </aside>
+</div>
+
+<section class="filters" id="filters" aria-labelledby="filters-title">
+  <div class="filters__head">
+    <h2 id="filters-title" class="h2" data-reveal>Six ways to find an edge</h2>
+    <p class="filters__lead" data-reveal>Sobel and Scharr trace nearly every ring, along with the crack and the museum's pins. Canny, at the notebook's thresholds, keeps the bark and the crack and drops almost every ring.</p>
+    <p class="filters__count" data-reveal>9 images</p>
+  </div>
+  <div class="row" tabindex="0" role="region" aria-label="Edge filter results, scrolls sideways">
+    <figure class="mod mod--tall"><img src="img/edge-sobel-x.webp" width="900" height="900" alt="Sobel filter in the x direction: rings as bright arcs on black" loading="lazy" decoding="async"><figcaption>Sobel, x</figcaption></figure>
+    <div class="mod mod--pair">
+      <figure><img src="img/edge-sobel-y.webp" width="900" height="900" alt="Sobel filter in the y direction" loading="lazy" decoding="async"><figcaption>Sobel, y</figcaption></figure>
+      <figure><img src="img/edge-scharr-x.webp" width="900" height="900" alt="Scharr filter in the x direction" loading="lazy" decoding="async"><figcaption>Scharr, x</figcaption></figure>
+    </div>
+    <figure class="mod mod--wide"><img src="img/psm-1873.webp" width="1024" height="1045" alt="Engraving of a trunk cross-section with dozens of concentric annual rings" loading="lazy" decoding="async"><figcaption>Annual ring growth, Popular Science Monthly, 1873</figcaption></figure>
+    <div class="mod mod--pair">
+      <figure><img src="img/edge-laplacian.webp" width="900" height="900" alt="Laplacian filter: faint rings and strong pins" loading="lazy" decoding="async"><figcaption>Laplacian</figcaption></figure>
+      <figure><img src="img/edge-canny-160.webp" width="900" height="900" alt="Canny at 160 to 190: only the outline and the crack remain" loading="lazy" decoding="async"><figcaption>Canny, 160–190</figcaption></figure>
+    </div>
+    <figure class="mod mod--tall"><img src="img/edge-canny-100.webp" width="900" height="900" alt="Canny at 100 to 200: outline, crack and a few ring fragments" loading="lazy" decoding="async"><figcaption>Canny, 100–200</figcaption></figure>
+    <figure class="mod mod--wide"><img src="img/slice2.webp" width="900" height="900" alt="A second, darker trunk slice with tightly packed rings and radial cracks" loading="lazy" decoding="async"><figcaption>A second slice</figcaption></figure>
+    <figure class="mod mod--tall"><img src="img/slice2-sobel-x.webp" width="900" height="900" alt="The second slice through Sobel x: rings and cracks equally bright" loading="lazy" decoding="async"><figcaption>Second slice, Sobel x</figcaption></figure>
+  </div>
+</section>
+
+<div class="duo">
+<section class="letter" aria-labelledby="letter-title">
+  <div class="letter__col">
+    <img class="letter__face" src="img/author.webp" width="88" height="88" alt="Portrait of Labib Habibie Sanjaya" loading="lazy" decoding="async">
+    <h2 id="letter-title" class="h2" data-reveal>What the study taught me</h2>
+    <p data-reveal>I started this in September 2023 wanting a program that could look at a stump and say how old the tree was. Two weeks in, the honest answer was that clustering and edge filters alone are not there yet.</p>
+    <p data-reveal>K-Means groups colours, not years. My first script counted the clusters and called that the age, which only ever returns the k I chose.</p>
+    <p data-reveal>Edge filters do see rings, but they see everything else as well: cracks, pins, saw marks, the bark. A crack that cuts across the rings breaks every contour it crosses.</p>
+    <p data-reveal>That is why the repository also holds Edge-Connect, a network that redraws missing edges, and why the plan names KNN and region growing next: one to sort pixels into earlywood and latewood, the other to grow each ring outward from the pith.</p>
+    <p class="letter__sign" data-reveal>Labib Habibie Sanjaya<span>Informatics, Universitas Diponegoro</span></p>
+  </div>
+</section>
+
+<section class="reading" id="reading" aria-labelledby="reading-title">
+  <div class="reading__col">
+    <h2 id="reading-title" class="h2" data-reveal>Reading list</h2>
+    <p class="reading__group" data-reveal>Papers in the repository</p>
+    <ul class="rows" data-reveal>
+      <li><i style="--c:#5c3e1f"></i><span>Detection of annual rings in wood. C. Jonsson, Linköping University</span><span>2008</span></li>
+      <li><i style="--c:#8e6a48"></i><span>Tree-ring delineation with active contours guided by DT-CWT coefficients. P. Kennel, P. Borianne, G. Subsol</span><span>2015</span></li>
+      <li><i style="--c:#b4804f"></i><span>Wood classification based on edge detections and texture features selection. A. Fahrurozi et al., IJECE</span><span>2016</span></li>
+      <li><i style="--c:#ca9564"></i><span>Annual ring profiles in Norway spruce boards by optical scanning and deep learning. O. Abdeljaber, T. Habite, A. Olsson</span><span>2022</span></li>
+      <li><i style="--c:#d5b69d"></i><span>An algorithm based on DAF-Net++ for wood annual ring segmentation. Z. Ge et al., Electronics</span><span>2023</span></li>
+    </ul>
+    <p class="reading__group" data-reveal>Code it builds on</p>
+    <ul class="rows" data-reveal>
+      <li><i style="--c:#5c3e1f"></i><span>Edge-Connect, adversarial edge learning for inpainting</span><span>knazeri</span></li>
+      <li><i style="--c:#8e6a48"></i><span>Canny and Marr–Hildreth edge detectors</span><span>adl1995</span></li>
+      <li><i style="--c:#b4804f"></i><span>Sobel, Scharr, Laplacian and Canny filters</span><span>Abdelrahman18999</span></li>
+      <li><i style="--c:#ca9564"></i><span>Canny edge detection, step by step</span><span>herrera-diego</span></li>
+    </ul>
+    <p class="reading__group" data-reveal>Tools</p>
+    <ul class="rows" data-reveal>
+      <li><i style="--c:#5c3e1f"></i><span>Python and Jupyter</span><span>notebooks</span></li>
+      <li><i style="--c:#8e6a48"></i><span>OpenCV</span><span>K-Means, filters</span></li>
+      <li><i style="--c:#b4804f"></i><span>scikit-learn and scikit-image</span><span>clustering, colour</span></li>
+      <li><i style="--c:#ca9564"></i><span>NumPy and Matplotlib</span><span>arrays, plots</span></li>
+    </ul>
+  </div>
+</section>
+</div>
+
+<footer class="foot">
+  <img class="foot__img" src="img/sequoia.webp" width="2000" height="1067" alt="The General Sherman tree, a giant sequoia about 2,200 years old, with a visitor standing at its base" loading="lazy" decoding="async">
+  <div class="foot__top">
+    <nav class="foot__links" aria-label="Footer">
+      <a href="#method">Method</a>
+      <a href="#try">Try the segmentation</a>
+      <a href="#filters">Edge filters</a>
+      <a href="https://github.com/labibhabibie/Wood-Annual-Ring-Prediction-using-Image-Segmentation" rel="noopener">Source code on GitHub</a>
+    </nav>
+    <p class="foot__contact">Labib Habibie Sanjaya<br>Informatics, Universitas Diponegoro<br>Semarang, Indonesia</p>
+  </div>
+  <div class="foot__bottom">
+    <p class="foot__name" aria-hidden="true">Annual rings</p>
+    <p class="foot__legal">© 2023 Labib Habibie Sanjaya. Pictures: <a href="https://commons.wikimedia.org/wiki/File:Populus_rings_Botanical_Museum_Helsinki.jpg">poplar slice</a> by Antti Leppänen, <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>; <a href="https://commons.wikimedia.org/wiki/File:Tree_Rings_-_Flickr_-_Me_in_ME.jpg">second slice</a> by Paul VanDerWerf, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>; both via Wikimedia Commons, processed versions under the same licences. Engraving from Popular Science Monthly vol. 3, 1873, public domain. <a href="https://commons.wikimedia.org/wiki/File:The_General_Sherman_tree_-_Sequoia_National_Park_(33241877800).jpg">General Sherman</a>, a giant sequoia about 2,200 years old, by m01229, <a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a>, cropped.</p>
+  </div>
+</footer>
+
+<script src="js/main.js?v=202611060954"></script>
+</body>
+</html>
